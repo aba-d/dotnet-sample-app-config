@@ -16,7 +16,7 @@ on:
         options: [dev, uat, prod]
         required: true
       version:
-        description: "Artifact ref to deploy (image digest / zip sha). Required for uat/prod."
+        description: "Artifact digest. Required for uat/prod."
         type: string
         required: false
 
