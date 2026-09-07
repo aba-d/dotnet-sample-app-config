@@ -15,7 +15,7 @@ infra:
   account: "111111111111"     # AWS account for this env — one per app, not org-wide
   region: us-east-1
   ecs:
-    cluster: dotnet-sample-app-dev
+    cluster: ecs-dev
     service: dotnet-sample-app-dev
     containerName: app
   ecr:
