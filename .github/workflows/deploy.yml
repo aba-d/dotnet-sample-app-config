@@ -22,7 +22,7 @@ on:
 
 permissions:
   id-token: write        # OIDC role assumption in cd-template.yml
-  contents: read
+  contents: write        # cd-template.yml commits the deployed version back to deploy/<env>.yml
 
 concurrency:
   group: deploy-${{ github.event.inputs.environment || 'dev' }}

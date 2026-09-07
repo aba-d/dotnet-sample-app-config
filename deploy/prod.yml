@@ -10,6 +10,18 @@ service:
 environment:
   name: prod
 
+infra:
+  region: us-east-1
+  ecs:
+    cluster: dotnet-sample-app-prod
+    service: dotnet-sample-app-prod
+    containerName: app
+  ecr:
+    repository: 333333333333.dkr.ecr.us-east-1.amazonaws.com/dotnet-sample-app
+  codedeploy:                 # required — release.strategy is blue-green
+    application: dotnet-sample-app-prod
+    deploymentGroup: dotnet-sample-app-prod
+
 release:
   version: ""                 # set by promotion — required for prod
   strategy: blue-green        # CodeDeploy blue/green; falls back to deploy-defaults if omitted

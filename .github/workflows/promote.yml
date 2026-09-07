@@ -14,7 +14,6 @@ on:
         required: true
 
 permissions:
-  id-token: write
   contents: read
   actions: write        # to dispatch deploy.yml
 
@@ -32,29 +31,13 @@ jobs:
             prod) echo "from=uat" >> "$GITHUB_OUTPUT" ;;
           esac
 
-      - uses: aba-enterprise/enterprise-ci-templates/actions/preflight-deploy@feature-ciconfig
-        id: from
-        with:
-          config-path: deploy
-          environment: ${{ steps.src.outputs.from }}
-
-      - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume:    ${{ steps.from.outputs.deploy_role }}
-          role-session-name: ${{ steps.from.outputs.session_name }}
-          aws-region:        ${{ steps.from.outputs.region }}
-
       - name: Read the version currently deployed in ${{ steps.src.outputs.from }}
         id: live
-        env:
-          PREFIX: ${{ steps.from.outputs.ssm_prefix }}
         run: |
-          # <app>-infra publishes the running version under <prefix>/release/version
-          # (written by cd-template.yml on every successful deploy).
-          echo "NOTE: wire this to your source of truth (SSM param, ECS task-def tag, etc.)"
-          echo "version=$(aws ssm get-parameter --name "$PREFIX/release/version" \
-                 --query Parameter.Value --output text 2>/dev/null || echo '')" >> "$GITHUB_OUTPUT"
+          # cd-template.yml commits the deployed ref into deploy/<env>.yml on every
+          # successful deploy — that file is the source of truth for promotion.
+          echo "version=$(yq -r '.release.version // ""' \
+                 "deploy/${{ steps.src.outputs.from }}.yml")" >> "$GITHUB_OUTPUT"
 
       - name: Dispatch deploy into ${{ inputs.to }}
         env:
