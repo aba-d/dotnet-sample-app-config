@@ -1,7 +1,7 @@
 # Release values for dotnet-sample-app in DEV.
 # Contract: enterprise-ci-templates/policy/schema/deploy-config.schema.json (cd/v1)
-# This file carries WHAT to run, never AWS resources (those live in
-# dotnet-sample-app-infra and are published to SSM /dotnet-sample-app/dev/...).
+# This file carries WHAT to run AND the AWS resource coordinates to run it
+# against (infra: block). cd-template.yml reads these directly from this file.
 apiVersion: cd/v1
 
 service:
@@ -10,6 +10,15 @@ service:
 
 environment:
   name: dev
+
+infra:
+  region: us-east-1
+  ecs:
+    cluster: dotnet-sample-app-dev
+    service: dotnet-sample-app-dev
+    containerName: app
+  ecr:
+    repository: 111111111111.dkr.ecr.us-east-1.amazonaws.com/dotnet-sample-app
 
 release:
   version: ""                 # empty = deploy the latest published artifact (dev only)

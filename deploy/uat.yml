@@ -9,6 +9,15 @@ service:
 environment:
   name: uat
 
+infra:
+  region: us-east-1
+  ecs:
+    cluster: dotnet-sample-app-uat
+    service: dotnet-sample-app-uat
+    containerName: app
+  ecr:
+    repository: 222222222222.dkr.ecr.us-east-1.amazonaws.com/dotnet-sample-app
+
 release:
   version: ""                 # set by promotion (deploy workflow input) — required for uat
   strategy: rolling
