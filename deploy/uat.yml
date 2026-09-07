@@ -10,6 +10,7 @@ environment:
   name: uat
 
 infra:
+  account: "222222222222"     # AWS account for this env — one per app, not org-wide
   region: us-east-1
   ecs:
     cluster: dotnet-sample-app-uat

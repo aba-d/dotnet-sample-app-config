@@ -12,7 +12,7 @@ deployment logic.
 | **Release values + AWS resource coordinates (this repo)** | `deploy/<env>.yml` (`infra:` block) |
 | OIDC deploy role + the AWS resources themselves | created out of band per env (console / Terraform / CloudFormation) |
 | Deploy logic | `enterprise-ci-templates/.github/workflows/cd-template.yml` |
-| Central CD defaults (accounts, regions, strategy) | `enterprise-ci-templates/policy/deploy-defaults.yml` |
+| Central CD defaults (runner account, default region, strategy) | `enterprise-ci-templates/policy/deploy-defaults.yml` |
 
 ## Layout
 
@@ -38,10 +38,13 @@ Validated against
 | `release.strategy` | `rolling` \| `blue-green` \| `canary` — falls back to the env default if omitted |
 | `runtime.env` | non-secret env vars |
 | `runtime.secrets` | secret **names** only — resolved from Secrets Manager at deploy time |
+| `infra.account` | **Required.** AWS account this env deploys into — the app team's own account, one set per app. `{account}` in the deploy-role ARN resolves to this. |
+| `infra.region` | AWS region for this deploy (falls back to the `deploy-defaults.yml` default region if omitted). |
 | `infra.<target>` | AWS resource names for the deploy (ECS cluster/service, ECR repo, CodeDeploy app/group, Lambda fn/alias, S3 bucket/distribution). Only the block matching `service.target` is required. |
 
-AWS account, region and the deploy-role ARN come from `deploy-defaults.yml`
-(patterns) — everything else is in the `infra:` block above.
+The deploy-role ARN *pattern*, the central `runnerAccount`, `sessionName`, default
+region and default strategy come from `deploy-defaults.yml` — everything
+app-specific, including `infra.account`, is in the `infra:` block above.
 
 > `release.version` for each env is updated automatically by `cd-template.yml`
 > on every successful deploy (committed back with `[skip ci]`).
