@@ -1,0 +1,9 @@
+# App team owns dev/uat release values.
+/deploy/dev.yml   @aba-d/app-team
+/deploy/uat.yml   @aba-d/app-team
+
+# Production release values require Platform / SRE review.
+/deploy/prod.yml  @aba-d/platform-sre
+
+# Workflows are platform-owned.
+/.github/          @aba-d/platform-sre

@@ -1,0 +1,30 @@
+# Release values for dotnet-sample-app in UAT.
+# Contract: enterprise-ci-templates/policy/schema/deploy-config.schema.json (cd/v1)
+apiVersion: cd/v1
+
+service:
+  name: dotnet-sample-app
+  target: ecs
+
+environment:
+  name: uat
+
+release:
+  version: ""                 # set by promotion (deploy workflow input) — required for uat
+  strategy: rolling
+
+runtime:
+  desiredCount: 2
+  containerPort: 8080
+  env:
+    ASPNETCORE_ENVIRONMENT: Staging
+  secrets:
+    - ConnectionStrings__Default
+
+scaling:
+  min: 2
+  max: 6
+  targetCpu: 60
+
+healthcheck:
+  path: /health

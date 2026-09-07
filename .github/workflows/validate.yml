@@ -1,0 +1,27 @@
+name: validate
+
+# PR check: schema-validate every deploy/<env>.yml against the central
+# deploy-config contract before it can merge. No AWS calls.
+
+on:
+  pull_request:
+    paths:
+      - "deploy/**"
+      - ".github/workflows/validate.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [dev, uat, prod]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aba-enterprise/enterprise-ci-templates/actions/preflight-deploy@feature-ciconfig
+        with:
+          config-path: deploy
+          environment: ${{ matrix.environment }}
+          validate-only: "true"
