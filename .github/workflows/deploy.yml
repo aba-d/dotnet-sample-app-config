@@ -1,0 +1,37 @@
+name: deploy
+
+# Thin caller. All deploy logic lives in the reusable cd-template.yml.
+#   - CI publishes an artifact -> repository_dispatch -> auto-deploy DEV
+#   - Promote to UAT / PROD by running this workflow with the same `version`
+#     (the GitHub Environment protection rules gate uat/prod)
+
+on:
+  repository_dispatch:
+    types: [artifact-published]        # sent by dotnet-sample-app CI on a green build
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        type: choice
+        options: [dev, uat, prod]
+        required: true
+      version:
+        description: "Artifact ref to deploy (image digest / zip sha). Required for uat/prod."
+        type: string
+        required: false
+
+permissions:
+  id-token: write        # OIDC role assumption in cd-template.yml
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.event.inputs.environment || 'dev' }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    uses: aba-enterprise/enterprise-ci-templates/.github/workflows/cd-template.yml@feature-ciconfig
+    with:
+      config-path: deploy
+      environment: ${{ github.event.inputs.environment || 'dev' }}
+      version: ${{ github.event.inputs.version || github.event.client_payload.version }}

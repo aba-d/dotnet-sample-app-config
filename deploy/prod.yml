@@ -1,0 +1,32 @@
+# Release values for dotnet-sample-app in PROD.
+# Contract: enterprise-ci-templates/policy/schema/deploy-config.schema.json (cd/v1)
+# Changes here require Platform / SRE review (see CODEOWNERS).
+apiVersion: cd/v1
+
+service:
+  name: dotnet-sample-app
+  target: ecs
+
+environment:
+  name: prod
+
+release:
+  version: ""                 # set by promotion — required for prod
+  strategy: blue-green        # CodeDeploy blue/green; falls back to deploy-defaults if omitted
+
+runtime:
+  desiredCount: 4
+  containerPort: 8080
+  env:
+    ASPNETCORE_ENVIRONMENT: Production
+  secrets:
+    - ConnectionStrings__Default
+
+scaling:
+  min: 4
+  max: 12
+  targetCpu: 55
+
+healthcheck:
+  path: /health
+  gracePeriodSeconds: 30

@@ -1,0 +1,32 @@
+# Release values for dotnet-sample-app in DEV.
+# Contract: enterprise-ci-templates/policy/schema/deploy-config.schema.json (cd/v1)
+# This file carries WHAT to run, never AWS resources (those live in
+# dotnet-sample-app-infra and are published to SSM /dotnet-sample-app/dev/...).
+apiVersion: cd/v1
+
+service:
+  name: dotnet-sample-app
+  target: ecs                 # ecs | ec2 | lambda | s3
+
+environment:
+  name: dev
+
+release:
+  version: ""                 # empty = deploy the latest published artifact (dev only)
+  strategy: rolling
+
+runtime:
+  desiredCount: 1
+  containerPort: 8080
+  env:
+    ASPNETCORE_ENVIRONMENT: Development
+  secrets:                    # names only — resolved from Secrets Manager at deploy time
+    - ConnectionStrings__Default
+
+scaling:
+  min: 1
+  max: 3
+  targetCpu: 65
+
+healthcheck:
+  path: /health
